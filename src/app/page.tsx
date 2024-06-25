@@ -1,13 +1,10 @@
+import { TodoList } from "@/components/organisms";
 import React from "react";
 
-const page = () => {
-  return (
-    <div>
-      <h1 className="font-black text-gray-900 text-[32px] w-full h-screen flex items-center justify-center">
-        TO-DO LIST APPLICATIONS
-      </h1>
-    </div>
-  );
-};
+const Home: React.FC = () => (
+  <div className="min-h-screen bg-gray-100 p-5">
+    <TodoList />
+  </div>
+);
 
-export default page;
+export default Home;
