@@ -17,7 +17,7 @@ const TodoItem: React.FC<TodoItemProps> = ({
   onDelete,
   onEdit,
 }) => (
-  <div className="flex items-center justify-between p-2 border-b">
+  <div className="flex items-center justify-between p-2 border-b w-full">
     <span
       className={`flex-1 ${
         isCompleted ? "line-through" : ""
