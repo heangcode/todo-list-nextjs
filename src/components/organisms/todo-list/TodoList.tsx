@@ -1,6 +1,6 @@
 "use client";
 
-import { Input } from "@/components/atoms";
+import { Input, Loading } from "@/components/atoms";
 import { TodoItem } from "@/components/molecules";
 import React, { useEffect, useState } from "react";
 import { toast, Toaster } from "react-hot-toast";
@@ -174,9 +174,16 @@ const TodoList: React.FC = () => {
           placeholder="Search..."
           className="mb-4 w-full"
         />
-        {loading && <div className="loader">Loading...</div>}
+        {loading && (
+          <Loading
+            className="flex items-center justify-center"
+            message="Loading..."
+          />
+        )}
         {filteredTodos.length === 0 && !loading && (
-          <div>No result. Create a new one instead!</div>
+          <p className="tracking-[1px] text-center w-full">
+            No result. Create a new one instead!
+          </p>
         )}
         {filteredTodos.length > 0 &&
           filteredTodos.map((todo) => (
