@@ -112,7 +112,7 @@ my-todo-list/
 - GET /api/todo: Fetch all todos.
 - POST /api/todo: Add a new todo.
 - PUT /api/todo/: Update a todo by ID.
-- DELETE /api/todo/: Delete a todo by ID.
+- DELETE /api/todo/: Delete a todo by ID
 
 ## Contributing
 
