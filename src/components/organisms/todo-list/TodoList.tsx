@@ -16,6 +16,7 @@ const TodoList: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState<string>("");
   const [filter, setFilter] = useState<string>("");
+  const [editTodoId, setEditTodoId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchTodos = async () => {
@@ -26,7 +27,9 @@ const TodoList: React.FC = () => {
     fetchTodos();
   }, []);
 
-  const handleAddTodo = async (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleAddOrUpdateTodo = async (
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
     if (e.key === "Enter") {
       if (!newTodo.trim()) {
         toast.error("Todo cannot be empty");
@@ -36,20 +39,42 @@ const TodoList: React.FC = () => {
         toast.error("Duplicate todo");
         return;
       }
-      const newTodoItem = {
-        id: Date.now().toString(),
-        todo: newTodo.trim(),
-        isCompleted: false,
-        createdAt: new Date(),
-      };
-      await fetch("/api/todo", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newTodoItem),
-      });
-      setTodos([...todos, newTodoItem]);
+
+      if (editTodoId) {
+        // Update existing todo
+        const updatedTodo = {
+          id: editTodoId,
+          todo: newTodo.trim(),
+          isCompleted: false,
+          createdAt: new Date(),
+        };
+        await fetch(`/api/todo/${editTodoId}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(updatedTodo),
+        });
+        setTodos(
+          todos.map((todo) => (todo.id === editTodoId ? updatedTodo : todo))
+        );
+        toast.success("Todo updated successfully");
+        setEditTodoId(null);
+      } else {
+        // Add new todo
+        const newTodoItem = {
+          todo: newTodo.trim(),
+          isCompleted: false,
+          createdAt: new Date(),
+        };
+        const response = await fetch("/api/todo", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newTodoItem),
+        });
+        const addedTodo = await response.json();
+        setTodos([...todos, addedTodo]);
+        toast.success("Todo added successfully");
+      }
       setNewTodo("");
-      toast.success("Todo added successfully");
     }
   };
 
@@ -81,7 +106,7 @@ const TodoList: React.FC = () => {
     const todo = todos.find((todo) => todo.id === id);
     if (todo) {
       setNewTodo(todo.todo);
-      setTodos(todos.filter((todo) => todo.id !== id));
+      setEditTodoId(id);
     }
   };
 
@@ -95,7 +120,7 @@ const TodoList: React.FC = () => {
       <Input
         value={newTodo}
         onChange={(e) => setNewTodo(e.target.value)}
-        onKeyDown={handleAddTodo}
+        onKeyDown={handleAddOrUpdateTodo}
         placeholder="Add todo"
         className="mb-4 w-full"
       />

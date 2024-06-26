@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-
-const API_URL = "http://localhost:3001/todos";
+import { updateDoc, deleteDoc, doc } from "firebase/firestore";
+import { db } from "@/lib/firestore";
 
 export async function PUT(
   req: NextRequest,
@@ -8,13 +8,9 @@ export async function PUT(
 ) {
   const { id } = params;
   const { todo, isCompleted } = await req.json();
-  const response = await fetch(`${API_URL}/${id}`, {
-    method: "PUT",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ todo, isCompleted }),
-  });
-  const data = await response.json();
-  return NextResponse.json(data);
+  const todoDoc = doc(db, "todos", id);
+  await updateDoc(todoDoc, { todo, isCompleted });
+  return NextResponse.json({ message: "Todo updated successfully" });
 }
 
 export async function DELETE(
@@ -22,8 +18,7 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
-  await fetch(`${API_URL}/${id}`, {
-    method: "DELETE",
-  });
+  const todoDoc = doc(db, "todos", id);
+  await deleteDoc(todoDoc);
   return NextResponse.json({ message: "Todo deleted successfully" });
 }

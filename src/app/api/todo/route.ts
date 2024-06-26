@@ -1,20 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
+import { collection, addDoc, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firestore";
 
-const API_URL = "http://localhost:3001/todos";
+const todosCollection = collection(db, "todos");
 
 export async function GET() {
-  const response = await fetch(API_URL);
-  const data = await response.json();
-  return NextResponse.json(data);
+  const querySnapshot = await getDocs(todosCollection);
+  const todos = querySnapshot.docs.map((doc) => ({
+    id: doc.id,
+    ...doc.data(),
+  }));
+  return NextResponse.json(todos);
 }
 
 export async function POST(req: NextRequest) {
-  const { id, todo, isCompleted, createdAt } = await req.json();
-  const response = await fetch(API_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ id, todo, isCompleted, createdAt }),
-  });
-  const data = await response.json();
-  return NextResponse.json(data);
+  const { todo, isCompleted, createdAt } = await req.json();
+  const newTodo = { todo, isCompleted, createdAt: new Date(createdAt) };
+  const docRef = await addDoc(todosCollection, newTodo);
+  return NextResponse.json({ id: docRef.id, ...newTodo });
 }
