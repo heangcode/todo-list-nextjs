@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { deleteTodo, updateTodo } from "@/data/todos";
+
+const API_URL = "http://localhost:3001/todos";
 
 export async function PUT(
   req: NextRequest,
@@ -7,8 +8,13 @@ export async function PUT(
 ) {
   const { id } = params;
   const { todo, isCompleted } = await req.json();
-  updateTodo(id, { todo, isCompleted });
-  return NextResponse.json({ message: "Todo updated successfully" });
+  const response = await fetch(`${API_URL}/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ todo, isCompleted }),
+  });
+  const data = await response.json();
+  return NextResponse.json(data);
 }
 
 export async function DELETE(
@@ -16,6 +22,8 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   const { id } = params;
-  deleteTodo(id);
+  await fetch(`${API_URL}/${id}`, {
+    method: "DELETE",
+  });
   return NextResponse.json({ message: "Todo deleted successfully" });
 }

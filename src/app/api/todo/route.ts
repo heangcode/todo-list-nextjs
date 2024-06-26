@@ -1,13 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
-import { addTodo, getTodos } from "@/data/todos";
+
+const API_URL = "http://localhost:3001/todos";
 
 export async function GET() {
-  const todos = getTodos();
-  return NextResponse.json(todos);
+  const response = await fetch(API_URL);
+  const data = await response.json();
+  return NextResponse.json(data);
 }
 
 export async function POST(req: NextRequest) {
   const { id, todo, isCompleted, createdAt } = await req.json();
-  addTodo({ id, todo, isCompleted, createdAt });
-  return NextResponse.json({ message: "Todo added successfully" });
+  const response = await fetch(API_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ id, todo, isCompleted, createdAt }),
+  });
+  const data = await response.json();
+  return NextResponse.json(data);
 }

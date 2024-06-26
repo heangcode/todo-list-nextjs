@@ -3,6 +3,7 @@
 import { Input } from "@/components/atoms";
 import { TodoItem } from "@/components/molecules";
 import React, { useEffect, useState } from "react";
+import { toast, Toaster } from "react-hot-toast";
 
 interface Todo {
   id: string;
@@ -28,11 +29,11 @@ const TodoList: React.FC = () => {
   const handleAddTodo = async (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       if (!newTodo.trim()) {
-        alert("Todo cannot be empty");
+        toast.error("Todo cannot be empty");
         return;
       }
       if (todos.some((todo) => todo.todo === newTodo.trim())) {
-        alert("Duplicate todo");
+        toast.error("Duplicate todo");
         return;
       }
       const newTodoItem = {
@@ -48,6 +49,7 @@ const TodoList: React.FC = () => {
       });
       setTodos([...todos, newTodoItem]);
       setNewTodo("");
+      toast.success("Todo added successfully");
     }
   };
 
@@ -61,6 +63,9 @@ const TodoList: React.FC = () => {
         body: JSON.stringify(updatedTodo),
       });
       setTodos(todos.map((todo) => (todo.id === id ? updatedTodo : todo)));
+      toast.success(
+        `Todo marked as ${updatedTodo.isCompleted ? "complete" : "incomplete"}`
+      );
     }
   };
 
@@ -69,6 +74,7 @@ const TodoList: React.FC = () => {
       method: "DELETE",
     });
     setTodos(todos.filter((todo) => todo.id !== id));
+    toast.success("Todo deleted successfully");
   };
 
   const handleEdit = (id: string) => {
@@ -84,17 +90,19 @@ const TodoList: React.FC = () => {
   );
 
   return (
-    <div className="max-w-md mx-auto mt-10">
+    <div className="max-w-xl mx-auto mt-10 bg-white rounded-[16px] shadow-md p-10">
+      <Toaster position="top-right" reverseOrder={false} />
       <Input
         value={newTodo}
         onChange={(e) => setNewTodo(e.target.value)}
         onKeyDown={handleAddTodo}
+        placeholder="Add todo"
         className="mb-4 w-full"
       />
       <Input
         value={filter}
         onChange={(e) => setFilter(e.target.value)}
-        placeholder="Filter todos"
+        placeholder="Search..."
         className="mb-4 w-full"
       />
       {filteredTodos.length ? (

@@ -1,6 +1,6 @@
 import { Button } from "@/components/atoms";
 import React from "react";
-import { DeleteIcon } from "../../../../public/icon";
+import { DeleteIcon, EditIcon } from "../../../../public/icon";
 
 interface TodoItemProps {
   todo: string;
@@ -17,20 +17,31 @@ const TodoItem: React.FC<TodoItemProps> = ({
   onDelete,
   onEdit,
 }) => (
-  <div className="flex items-center justify-between p-2 border-b hover:bg-gray-200">
-    <span className={isCompleted ? "line-through" : ""}>{todo}</span>
-    <div>
+  <div className="flex items-center justify-between p-2 border-b">
+    <span
+      className={`flex-1 ${
+        isCompleted ? "line-through" : ""
+      } overflow-hidden overflow-ellipsis whitespace-nowrap`}
+    >
+      {todo}
+    </span>
+    <div className="flex items-center space-x-2">
+      <Button onClick={onToggleComplete} className="bg-blue-500 text-white">
+        {isCompleted ? "Mark as Incomplete" : "Mark as Complete"}
+      </Button>
       <Button
-        onClick={onToggleComplete}
-        className="bg-blue-500 text-white mr-2"
+        onClick={onEdit}
+        className="text-white bg-blue-600 flex items-center space-x-2 hover:bg-blue-800 hover:text-white rounded-lg"
       >
-        {isCompleted ? "Mark as Incomplete" : "Complete"}
+        <EditIcon />
+        <span>Edit</span>
       </Button>
-      <Button onClick={onEdit} className="bg-yellow-500 text-white mr-2">
+      <Button
+        onClick={onDelete}
+        className="text-white bg-red-600 flex items-center space-x-2 capitalize hover:bg-red-800 hover:text-white rounded-lg"
+      >
         <DeleteIcon />
-      </Button>
-      <Button onClick={onDelete} className="bg-red-500 text-white">
-        <DeleteIcon />
+        <span>Remove</span>
       </Button>
     </div>
   </div>
